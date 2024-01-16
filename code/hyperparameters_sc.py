@@ -10,7 +10,7 @@ A critical parameter that can dramatically affect whether training
 succeeds or fails. The value for this depends significantly on which
 optimizer is used. Refer to the default learning rate parameter
 """
-learning_rate = 1e-3
+learning_rate = 0.01
 
 """
 Momentum on the gradient (if you use a momentum-based optimizer)
@@ -46,4 +46,4 @@ batch_size = 32
 """
 The number of image scene classes. Don't change this.
 """
-num_classes = 57
+num_classes = 15

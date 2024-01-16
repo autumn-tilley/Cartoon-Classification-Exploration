@@ -70,11 +70,6 @@ def parse_args():
         default='..'+os.sep+'image'+os.sep,
         help='Location where the input image is stored.')
     parser.add_argument(
-        '--filter',
-        required=True,
-        choices=['original', 'cartoon', 'edges'],
-        help='Location where the input image is stored.')
-    parser.add_argument(
         '--load-vgg',
         default='vgg16_imagenet.h5',
         help='''Path to pre-trained VGG-16 file (only applicable to
@@ -314,7 +309,7 @@ def main():
     elif ARGS.task == '4':
         datasets = Datasets_sc(ARGS.data, ARGS.task)
         # Load the pre-trained model for scene classification
-        model_path = "vgg_weights_scene.h5"
+        model_path = "cartoon1.h5"
         model = VGGModel_sc()
         model(tf.keras.Input(shape=(224, 224, 3)))
 
