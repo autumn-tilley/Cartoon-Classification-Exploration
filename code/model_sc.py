@@ -33,9 +33,9 @@ class YourModel_sc(tf.keras.Model):
          tf.keras.layers.BatchNormalization(),
       
          Flatten(),
-         Dense(512, activation='relu'),
+         Dense(512, activation='softmax'),
          Dropout(0.4),
-         Dense(10, activation='softmax')
+         Dense(15, activation='softmax')
      ]
 
     def call(self, x):
@@ -99,7 +99,6 @@ class VGGModel_sc(tf.keras.Model):
             MaxPool2D(2, name="block5_pool")
         ]
 
-#for scene stuff
         for layer in self.vgg16:
             layer.trainable = False
 
@@ -112,16 +111,11 @@ class VGGModel_sc(tf.keras.Model):
               tf.keras.layers.Dense(57, activation='softmax')]'''
         
 
-        '''for layer in self.vgg16:
-            layer.trainable = False'''
-
         self.head = [
             tf.keras.layers.Flatten(),
-            tf.keras.layers.Dense(512, activation='relu'),
-            BatchNormalization(),
-            tf.keras.layers.Dropout(0.5),
-            tf.keras.layers.Dense(57, activation='softmax')
-            ]
+              tf.keras.layers.Dense(512, activation='relu'),
+              tf.keras.layers.Dropout(0.5),
+              tf.keras.layers.Dense(57, activation='softmax')]
 
         # Don't change the below:
         self.vgg16 = tf.keras.Sequential(self.vgg16, name="vgg_base")

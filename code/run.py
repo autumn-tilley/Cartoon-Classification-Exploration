@@ -14,6 +14,19 @@ import hyperparameters_obj as hp_obj
 #Scene hyperparameters are the default right now
 
 
+# task 1 - training with your
+# task 2 - training with vgg
+
+# TASK 3 - testing individual scene images (using your weights)
+# original, cartoon, edges
+# TASK 4 - testing individual scene images (using vgg weights)
+# original, cartoon, edges
+
+# TASK 5 - testing individual animal images (using your weights)
+# TASK 6 - testing individual animal images (using vgg weights)
+
+
+
 from model_sc import YourModel_sc, VGGModel_sc
 from model_obj import YourModel_obj, VGGModel_obj
 
@@ -57,6 +70,11 @@ def parse_args():
         default='..'+os.sep+'image'+os.sep,
         help='Location where the input image is stored.')
     parser.add_argument(
+        '--filter',
+        required=True,
+        choices=['original', 'cartoon', 'edges'],
+        help='Location where the input image is stored.')
+    parser.add_argument(
         '--load-vgg',
         default='vgg16_imagenet.h5',
         help='''Path to pre-trained VGG-16 file (only applicable to
@@ -80,88 +98,13 @@ def parse_args():
         help='''Skips training and evaluates on the test set once.
         You can use this to test an already trained model by loading
         its checkpoint.''')
-    # parser.add_argument(
-    #     '--lime-image',
-    #     default='test/Bedroom/image_0003.jpg',
-    #     help='''Name of an image in the dataset to use for LIME evaluation.''')
 
     return parser.parse_args()
-
-
-# def LIME_explainer(model, path, preprocess_fn, timestamp):
-#     """
-#     This function takes in a trained model and a path to an image and outputs 4
-#     visual explanations using the LIME model
-#     """
-
-#     save_directory = "lime_explainer_images" + os.sep + timestamp
-#     if not os.path.exists("lime_explainer_images"):
-#         os.mkdir("lime_explainer_images")
-#     if not os.path.exists(save_directory):
-#         os.mkdir(save_directory)
-#     image_index = 0
-
-#     def image_and_mask(title, positive_only=True, num_features=5,
-#                        hide_rest=True):
-#         nonlocal image_index
-
-#         temp, mask = explanation.get_image_and_mask(
-#             explanation.top_labels[0], positive_only=positive_only,
-#             num_features=num_features, hide_rest=hide_rest)
-#         plt.imshow(mark_boundaries(temp / 2 + 0.5, mask))
-#         plt.title(title)
-
-#         image_save_path = save_directory + os.sep + str(image_index) + ".png"
-#         plt.savefig(image_save_path, dpi=300, bbox_inches='tight')
-#         plt.show()
-
-#         image_index += 1
-
-#     # Read the image and preprocess it as before
-#     image = imread(path)
-#     if len(image.shape) == 2:
-#         image = np.stack([image, image, image], axis=-1)
-#     image = resize(image, (hp_sc.img_size, hp_sc.img_size, 3), preserve_range=True)
-#     image = preprocess_fn(image)
-    
-
-#     explainer = lime_image.LimeImageExplainer()
-
-#     explanation = explainer.explain_instance(
-#         image.astype('double'), model.predict, top_labels=5, hide_color=0,
-#         num_samples=1000)
-
-#     # The top 5 superpixels that are most positive towards the class with the
-#     # rest of the image hidden
-#     image_and_mask("Top 5 superpixels", positive_only=True, num_features=5,
-#                    hide_rest=True)
-
-#     # The top 5 superpixels with the rest of the image present
-#     image_and_mask("Top 5 with the rest of the image present",
-#                    positive_only=True, num_features=5, hide_rest=False)
-
-#     # The 'pros and cons' (pros in green, cons in red)
-#     image_and_mask("Pros(green) and Cons(red)",
-#                    positive_only=False, num_features=10, hide_rest=False)
-
-#     # Select the same class explained on the figures above.
-#     ind = explanation.top_labels[0]
-#     # Map each explanation weight to the corresponding superpixel
-#     dict_heatmap = dict(explanation.local_exp[ind])
-#     heatmap = np.vectorize(dict_heatmap.get)(explanation.segments)
-#     plt.imshow(heatmap, cmap='RdBu', vmin=-heatmap.max(), vmax=heatmap.max())
-#     plt.colorbar()
-#     plt.title("Map each explanation weight to the corresponding superpixel")
-
-#     image_save_path = save_directory + os.sep + str(image_index) + ".png"
-#     plt.savefig(image_save_path, dpi=300, bbox_inches='tight')
-#     plt.show()
-
 
 def train(model, datasets, checkpoint_path, logs_path, init_epoch, task):
     """ Training routine. """
 
-    #Scene model
+    #Scene or animal model 
     if task == '1':
         # Keras callbacks for training
         callback_list = [
@@ -186,37 +129,10 @@ def train(model, datasets, checkpoint_path, logs_path, init_epoch, task):
             callbacks=callback_list,
             initial_epoch=init_epoch,
         )
-        model.load_weights("your_weights.h5")
-        
+        model.load_weights("your_weights.h5")       
 
-    # Object Model
+    #VGG SCENE or Animals
     elif task == '2':
-        # Keras callbacks for training
-        callback_list = [
-            tf.keras.callbacks.TensorBoard(
-                log_dir=logs_path,
-                update_freq='batch',
-                profile_batch=0),
-            ImageLabelingLogger(logs_path, datasets),
-            CustomModelSaver(checkpoint_path, ARGS.task, hp_obj.max_num_weights)
-        ]
-
-        # Include confusion logger in callbacks if flag set
-        if ARGS.confusion:
-            callback_list.append(ConfusionMatrixLogger(logs_path, datasets))
-
-        # Begin training
-        model.fit(
-            x=datasets.train_data,
-            validation_data=datasets.test_data,
-            epochs=hp_obj.num_epochs,
-            batch_size=None,            # Required as None as we use an ImageDataGenerator; see preprocess.py get_data()
-            callbacks=callback_list,
-            initial_epoch=init_epoch,
-        )
-
-    #VGG SCENE
-    elif task == '3':
         # Keras callbacks for training
         callback_list = [
             tf.keras.callbacks.TensorBoard(
@@ -241,36 +157,7 @@ def train(model, datasets, checkpoint_path, logs_path, init_epoch, task):
             initial_epoch=init_epoch,
         )
 
-    # VGG OBJECT
-    elif task == '4':
-        # Keras callbacks for training
-        callback_list = [
-            tf.keras.callbacks.TensorBoard(
-                log_dir=logs_path,
-                update_freq='batch',
-                profile_batch=0),
-            ImageLabelingLogger(logs_path, datasets),
-            CustomModelSaver(checkpoint_path, ARGS.task, hp_obj.max_num_weights)
-        ]
-
-        # Include confusion logger in callbacks if flag set
-        if ARGS.confusion:
-            callback_list.append(ConfusionMatrixLogger(logs_path, datasets))
-
-        # Begin training
-        model.fit(
-            x=datasets.train_data,
-            validation_data=datasets.test_data,
-            epochs=hp_obj.num_epochs,
-            batch_size=None,            # Required as None as we use an ImageDataGenerator; see preprocess.py get_data()
-            callbacks=callback_list,
-            initial_epoch=init_epoch,
-        )
-
-
-
     else: 
-        #DO BOTH... Need to figure out what that means
         pass
 
 def test(model, test_data):
@@ -306,7 +193,14 @@ def predict_scene(model, image_path, preprocess_fn):
     print(predicted_class)
 
     # Get the sorted class names from the test data folder
-    class_names = get_class_names("../animals/test")
+
+    if ARGS.task == "3" or ARGS.task == "4":
+        print("here")
+        class_names = get_class_names("../15_Scene/test")
+
+    #for 5 and 6
+    else:
+        class_names = get_class_names("../animals/test")
 
     # Convert the predicted class number to the class name
     predicted_class_name = scene_num_to_scene_name(predicted_class, class_names)
@@ -382,18 +276,6 @@ def main():
         model.summary()
 
     elif ARGS.task == '2':
-        datasets = Datasets_obj(ARGS.data, ARGS.task)
-        model = YourModel_obj()
-        model(tf.keras.Input(shape=(hp_obj.img_size, hp_obj.img_size, 3)))
-        checkpoint_path = "checkpoints" + os.sep + \
-            "your_model" + os.sep + timestamp + os.sep
-        logs_path = "logs" + os.sep + "your_model" + \
-            os.sep + timestamp + os.sep
-
-        # Print summary of model
-        model.summary()
-
-    elif ARGS.task == '3':
         datasets = Datasets_sc(ARGS.data, ARGS.task)
         model = VGGModel_sc()
         checkpoint_path = "checkpoints" + os.sep + \
@@ -409,24 +291,43 @@ def main():
         # Load base of VGG model
         model.vgg16.load_weights(ARGS.load_vgg, by_name=True)
 
-    elif ARGS.task == '4':
+        
+    elif ARGS.task == '3':
         datasets = Datasets_sc(ARGS.data, ARGS.task)
-        model = VGGModel_obj()
-        checkpoint_path = "checkpoints" + os.sep + \
-            "vgg_model" + os.sep + timestamp + os.sep
-        logs_path = "logs" + os.sep + "vgg_model" + \
-            os.sep + timestamp + os.sep
+        # Load the pre-trained model for scene classification
+        model_path = "your_weights_scene.h5"
+        model = VGGModel_sc()
         model(tf.keras.Input(shape=(224, 224, 3)))
 
-        # Print summaries for both parts of the model
-        model.vgg16.summary()
-        model.head.summary()
-
-        # Load base of VGG model
         model.vgg16.load_weights(ARGS.load_vgg, by_name=True)
+        model.head.load_weights(model_path, by_name=True)
 
+        # Provide the path to the input image
+        # input_image_path = "../data/15_Scene/test/Office/image_0001.jpg"
+        input_image_path = ARGS.imagePath
 
-# Autumn - we are working here mainly for now
+        # Predict the scene in the input image using the pre-trained model
+        predicted_class = predict_scene(model, input_image_path, datasets.preprocess_fn)
+        print("Predicted class: ", predicted_class)
+        
+
+    elif ARGS.task == '4':
+        datasets = Datasets_sc(ARGS.data, ARGS.task)
+        # Load the pre-trained model for scene classification
+        model_path = "vgg_weights_scene.h5"
+        model = VGGModel_sc()
+        model(tf.keras.Input(shape=(224, 224, 3)))
+
+        model.vgg16.load_weights(ARGS.load_vgg, by_name=True)
+        model.head.load_weights(model_path, by_name=True)
+
+        # Provide the path to the input image
+        # input_image_path = "../data/15_Scene/test/Office/image_0001.jpg"
+        input_image_path = ARGS.imagePath
+
+        # Predict the scene in the input image using the pre-trained model
+        predicted_class = predict_scene(model, input_image_path, datasets.preprocess_fn)
+        print("Predicted class: ", predicted_class)
 
     elif ARGS.task == '5':
         datasets = Datasets_sc(ARGS.data, ARGS.task)
@@ -445,43 +346,12 @@ def main():
         # Predict the scene in the input image using the pre-trained model
         predicted_class = predict_scene(model, input_image_path, datasets.preprocess_fn)
         print("Predicted class: ", predicted_class)
-
-        '''
-
-        #OBJECT CAPTION GENERATION
-
-        captionOutput =generate_caption(input_image_path, "resnet")
-
-        if predicted_class in ["Bedroom", "Forest", "Kitchen", "LivingRoom", "Store", "Suburb"]:
-            combined_out = captionOutput + " in a " + predicted_class
-        elif predicted_class in ["Office", "OpenCountry"]:
-            combined_out = captionOutput + " in an " + predicted_class
-        elif predicted_class in ["Coast", "Highway", "Mountain", "Street"]:
-            combined_out = captionOutput + " on a " + predicted_class
-        elif predicted_class == "Industrial":
-            combined_out = captionOutput + " in an " + predicted_class + " area"
-        elif predicted_class == "InsideCity":
-            combined_out = captionOutput + " in a city"
-        else:
-            # TallBuilding case
-            combined_out = captionOutput + " near a " + predicted_class
-
-        # Print the predicted class
-        print("Predicted class: ", predicted_class)
-        # Print the caption
-        print("Caption: ", captionOutput)
-        # Print the combined caption
-        print("Combined result: " + combined_out)
-        speaker = speech.TTS(135, 1.0, 0)
-        speaker.speak(combined_out)
-
-        '''
         
 
     elif ARGS.task == '6':
         datasets = Datasets_sc(ARGS.data, ARGS.task)
         # Load the pre-trained model for scene classification
-        model_path = "vgg_weights_scene.h5"
+        model_path = "ogAnimals.h5"
         model = VGGModel_sc()
         model(tf.keras.Input(shape=(224, 224, 3)))
 
@@ -495,30 +365,6 @@ def main():
         # Predict the scene in the input image using the pre-trained model
         predicted_class = predict_scene(model, input_image_path, datasets.preprocess_fn)
         print("Predicted class: ", predicted_class)
-
-
-# Autumn - for testing random things like the animals, food, and objects
-    elif ARGS.task == "test":
-
-        datasets = Datasets_sc(ARGS.data, ARGS.task)
-        # Load the pre-trained model for scene classification
-        model_path = "cifartest.h5"
-        model = VGGModel_sc()
-        model(tf.keras.Input(shape=(224, 224, 3)))
-
-        model.vgg16.load_weights(ARGS.load_vgg, by_name=True)
-        model.head.load_weights(model_path, by_name=True)
-
-        # Provide the path to the input image
-        # input_image_path = "../data/15_Scene/test/Office/image_0001.jpg"
-        input_image_path = ARGS.imagePath
-
-        # Predict the scene in the input image using the pre-trained model
-        predicted_class = predict_scene(model, input_image_path, datasets.preprocess_fn)
-        print("Predicted class: ", predicted_class)
-
-
-    
 
     else:
         model = None #REPLACE WITH BOTH
@@ -549,12 +395,6 @@ def main():
     if ARGS.task == '2':
         if not ARGS.evaluate and not os.path.exists(checkpoint_path):
             os.makedirs(checkpoint_path)
-    if ARGS.task == '3':
-        if not ARGS.evaluate and not os.path.exists(checkpoint_path):
-            os.makedirs(checkpoint_path)
-    if ARGS.task == '4':
-        if not ARGS.evaluate and not os.path.exists(checkpoint_path):
-            os.makedirs(checkpoint_path)
 
     # Compile model graph
     model.compile(
@@ -573,6 +413,14 @@ def main():
         # path = ARGS.data + os.sep + ARGS.lime_image
         # LIME_explainer(model, path, datasets.preprocess_fn, timestamp)
     else:
+        if ARGS.task == '3':
+            checkpoint_path = None
+            logs_path = None
+            train(model, datasets, checkpoint_path, logs_path, init_epoch, ARGS.task)
+        if ARGS.task == '4':
+            checkpoint_path = None
+            logs_path = None
+            train(model, datasets, checkpoint_path, logs_path, init_epoch, ARGS.task)
         if ARGS.task == '5':
             checkpoint_path = None
             logs_path = None
