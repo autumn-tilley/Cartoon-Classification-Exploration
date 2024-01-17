@@ -15,7 +15,7 @@ import cv2
 This function loads an image, and then attempts to filter that image
 using different kernels as a testing routine.
 """
-def filter_test(img_path, type):
+def filter_test(img_path, type, quantity):
     resultsDir = '..' + os.sep + 'results'
     if not os.path.exists(resultsDir):
         os.mkdir(resultsDir)
@@ -31,6 +31,13 @@ def filter_test(img_path, type):
         Z = img.reshape((-1,3))
         # convert to np.float32
         Z = np.float32(Z)
+
+        #NEW
+        blur_filter = np.ones((5, 5), dtype=np.float32)
+        # making the filter sum to 1
+        blur_filter /= np.sum(blur_filter, dtype=np.float32)
+        img = my_imfilter(img, blur_filter)
+
         # define criteria, number of clusters(K) and apply kmeans()
         criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
         K = 10
@@ -75,13 +82,17 @@ def filter_test(img_path, type):
 
         img = cv2.imread(img_path)
 
-        blur_filter = np.ones((5, 5), dtype=np.float32)
+        blur_filter = np.ones((3, 3), dtype=np.float32) #NEW: changed to be smalled blue
         # making the filter sum to 1
         blur_filter /= np.sum(blur_filter, dtype=np.float32)
         blur_image = my_imfilter(img, blur_filter)
 
         blur_image = np.uint8(blur_image)
         edges = cv2.Canny(blur_image, threshold1=100, threshold2=200)
+
+        # new:
+        edges = cv2.dilate(edges, np.ones((5, 5), dtype=np.float32)) # make edge lines bolder
+
         edges = np.invert(edges)
 
         if type == "both":

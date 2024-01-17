@@ -28,6 +28,10 @@ def main():
                         help="Either 'filter' to run image "
                              "filtering or 'hybrid' to run "
                              "hybrid image generation")
+    parser.add_argument("-q", "--quantity",
+                        required=True,
+                        choices=['single', 'many'],
+                        help="Run on single or many")
     parser.add_argument("-i", "--image",
                         required=True,
                         help="Paths to image(s). If running "
@@ -41,7 +45,7 @@ def main():
         for i in range(0, len(dir_list)):
             if ".DS_Store" != dir_list[i]:
                 img = args.image + "/" + dir_list[i]
-                filter_test(img, args.task)
+                filter_test(img, args.task, args.quantity)
     
 
     elif args.task == 'edge':
@@ -50,21 +54,24 @@ def main():
         for i in range(0, len(dir_list)):
             if ".DS_Store" != dir_list[i]:
                 img = args.image + "/" + dir_list[i]
-                filter_test(img, args.task)
+                filter_test(img, args.task, args.quantity)
     
 
     elif args.task == 'both':
-        dir_list = [x[0] for x in os.walk(args.image)]
-        for i in range(1, len(dir_list)):
-            print("folder " + str(i))
-            if ".DS_Store" != dir_list[i]:
-                dir_list2 = os.listdir(dir_list[i]) 
-                for j in range(0, len(dir_list2)):
-                    if ".DS_Store" != dir_list2[j]:
-                        print(str(j) + " out of " + str(len(dir_list2)))
-                        img = dir_list[i] + "/" + dir_list2[j]
-                        print(img)
-                        filter_test(img, args.task)
+        if args.quantity == "many":
+            dir_list = [x[0] for x in os.walk(args.image)]
+            for i in range(1, len(dir_list)):
+                print("folder " + str(i))
+                if ".DS_Store" != dir_list[i]:
+                    dir_list2 = os.listdir(dir_list[i]) 
+                    for j in range(0, len(dir_list2)):
+                        if ".DS_Store" != dir_list2[j]:
+                            print(str(j) + " out of " + str(len(dir_list2)))
+                            img = dir_list[i] + "/" + dir_list2[j]
+                            print(img)
+                            filter_test(img, args.task, args.quantity)
+        else:
+            filter_test(args.image, args.task, args.quantity)
 
 
     # user didn't specify whether testing filtering or hybrid image generation
