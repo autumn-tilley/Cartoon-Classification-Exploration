@@ -1,3 +1,8 @@
+INSTRUCTIONS ON HOW TO RUN
+___________________________________
+
+
+
 CLASSIFYING
 
 cd into the classification-code directory
