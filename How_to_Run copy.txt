@@ -23,6 +23,8 @@ APPLYING FILTERS
 
 Cd into the filter-code directory
 
+Running through the terminal: python3 main.py -t | --task <cartoon or edge or both> -q | --quantity <single or many> -i | --image <image or nested folder path>
+
 Based on the input for "--task", you can apply either a "cartoon" or an "edge" filter. Or both.
 
 Based on the input for "--quantity", you can either apply a filter to a "single" image or to "many" images." For a single image, paste in the pathway to the image for the "--image" argument. For many images, paste in the pathway to a folder of folders of images for the "--image" argument.
