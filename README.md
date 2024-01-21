@@ -17,7 +17,7 @@ FOR OUR OWN CUSTOM MODEL:
 FOR VGG BASED MODEL:
 -     python run.py --task 3 --data ../cartoon-or-not
 
-You can also test on a single image. Modify the image path as desired.
+** You can also test on a single image. Modify the image path as desired. **
 
 To classify into one of the 15 scenes:
 -     python run.py --task 4 --data ../15_Scene --imagePath ../15_Scene/test/Office/image_0001.jpg
