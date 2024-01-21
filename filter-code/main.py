@@ -31,7 +31,7 @@ def main():
     parser.add_argument("-q", "--quantity",
                         required=True,
                         choices=['single', 'many'],
-                        help="Run on single or many")
+                        help="Run on single or many images")
     parser.add_argument("-i", "--image",
                         required=True,
                         help="Paths to image(s). If running "
@@ -73,11 +73,8 @@ def main():
         else:
             filter_test(args.image, args.task, args.quantity)
 
-
-    # user didn't specify whether testing filtering or hybrid image generation
     else:
-        print("You must specify what you are testing (either 'filter' or 'hybrid')"
-              " for e.g. try running: \n python3 main.py -t filter -i ../data/dog.bmp")
+        print("Unrecognized task entered")
 
 
 if __name__ == '__main__':

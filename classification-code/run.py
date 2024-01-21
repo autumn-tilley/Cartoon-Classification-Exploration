@@ -153,7 +153,6 @@ def predict(model, image_path, preprocess_fn):
 
     # Get the sorted class names from the test folders
     if ARGS.task == "5" or ARGS.task == "6":
-        print("here")
         class_names = get_class_names("../cartoon-or-not/test")
     else:
         class_names = get_class_names("../15_Scene/test")
