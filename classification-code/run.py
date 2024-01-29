@@ -55,7 +55,7 @@ def train(model, datasets, checkpoint_path, logs_path, init_epoch, task):
     """ Training routine. """
 
     # Training using VGG for all Scenes
-    if task == '1':
+    if task == '1' or task == '3':
         callback_list = [
             tf.keras.callbacks.TensorBoard(
                 log_dir=logs_path,
@@ -95,27 +95,6 @@ def train(model, datasets, checkpoint_path, logs_path, init_epoch, task):
             initial_epoch=init_epoch,
         )
         # model.load_weights("your_weights.h5")   # What if I remove this  
-
-    elif task == '3':
-        # Keras callbacks for training
-        callback_list = [
-            tf.keras.callbacks.TensorBoard(
-                log_dir=logs_path,
-                update_freq='batch',
-                profile_batch=0),
-            ImageLabelingLogger(logs_path, datasets),
-            CustomModelSaver(checkpoint_path, ARGS.task, hp_sc.max_num_weights)
-        ]
-
-        # Begin training
-        model.fit(
-            x=datasets.train_data,
-            validation_data=datasets.test_data,
-            epochs=hp_sc.num_epochs,
-            batch_size=None,
-            callbacks=callback_list,
-            initial_epoch=init_epoch,
-        )
 
     else: 
         pass
@@ -203,7 +182,7 @@ def main():
 
     datasets = None
 
-    if ARGS.task == '1':
+    if ARGS.task == '1' or ARGS.task == '3':
         datasets = Datasets_sc(ARGS.data, ARGS.task)
         model = VGGModel_sc(ARGS.task)
         checkpoint_path = "checkpoints" + os.sep + \
@@ -230,22 +209,6 @@ def main():
 
         # Print summary of model
         model.summary()
-
-    elif ARGS.task == '3':
-        datasets = Datasets_sc(ARGS.data, ARGS.task)
-        model = VGGModel_sc(ARGS.task)
-        checkpoint_path = "checkpoints" + os.sep + \
-            "vgg_model" + os.sep + timestamp + os.sep
-        logs_path = "logs" + os.sep + "vgg_model" + \
-            os.sep + timestamp + os.sep
-        model(tf.keras.Input(shape=(224, 224, 3)))
-
-        # Print summaries for both parts of the model
-        model.vgg16.summary()
-        model.head.summary()
-
-        # Load base of VGG model
-        model.vgg16.load_weights(ARGS.load_vgg, by_name=True)
 
     elif ARGS.task == '4':
         datasets = Datasets_sc(ARGS.data, ARGS.task)

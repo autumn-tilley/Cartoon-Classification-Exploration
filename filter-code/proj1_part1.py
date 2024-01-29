@@ -16,9 +16,6 @@ This function loads an image, and then attempts to filter that image
 using different kernels as a testing routine.
 """
 def filter_test(img_path, type, quantity):
-    resultsDir = '..' + os.sep + 'results'
-    if not os.path.exists(resultsDir):
-        os.mkdir(resultsDir)
 
     test_image = load_image(img_path)
     test_image = rescale(test_image, 0.7, mode='reflect', multichannel=True)

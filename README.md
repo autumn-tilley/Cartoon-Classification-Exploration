@@ -7,26 +7,26 @@ CLASSIFYING
 
 cd into the classification-code directory
 
-In order to run the scene classification model enter the following into the terminal:
--     python run.py --task 1 --data ../15_Scene
-
-In order to run the cartoon-or-not classification model enter the following into the terminal:
-
-FOR OUR OWN CUSTOM MODEL: 
--     python run.py --task 2 --data ../cartoon-or-not
-FOR VGG BASED MODEL:
--     python run.py --task 3 --data ../cartoon-or-not
-
-** You can also test on a single image. Modify the image path as desired. **
+You can test on a single image. Modify the image path as desired.
 
 To classify into one of the 15 scenes:
 -     python run.py --task 4 --data ../15_Scene --imagePath ../15_Scene/test/Office/image_0001.jpg
 
 To classify into cartoon-or-not using custom "your" model:
--     python run.py --task 5 --data ../cartoon-or-not --imagePath ../cartoon-or-not/test/cartoon/image_0001.jpg
+-     python run.py --task 5 --data ../cartoon-or-not --imagePath ../cartoon-or-not/test/real/image_0001.jpg
 
 To classify into cartoon-or-not using custom VGG model:
 -     python run.py --task 6 --data ../cartoon-or-not --imagePath ../cartoon-or-not/test/cartoon/image_0001.jpg
+
+* If wanting to retrain, you might want to adjust "hyperparameter_sc" based on the task. I have already trained using CNNs and saved the model's weights *
+
+But order to run/train the cartoon-or-not classification model enter the following into the terminal:
+
+FOR OUR OWN CUSTOM MODEL: 
+-     python run.py --task 2 --data ../cartoon-or-not
+-     adjustments may need to be made to "hyperparameter_sc" as it is currently set up to work with the VGG aproach which had better results
+FOR VGG BASED MODEL:
+-     python run.py --task 3 --data ../cartoon-or-not 
 
 
 

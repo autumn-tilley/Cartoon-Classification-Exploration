@@ -37,9 +37,9 @@ class Datasets_sc():
         # Setup data generators
         # These feed data to the training and testing routine based on the dataset
         self.train_data = self.get_data(
-            os.path.join(self.data_path, "train/"), task == '3', True, True)
+            os.path.join(self.data_path, "train/"), task == '3', True, True) # Does this need to be changed to account for task 1 as well?
         self.test_data = self.get_data(
-            os.path.join(self.data_path, "test/"), task == '3', False, False)
+            os.path.join(self.data_path, "test/"), task == '3', False, False) # Does this need to be changed to account for task 1 as well?
 
     def calc_mean_and_std(self):
         """ Calculate mean and standard deviation of a sample of the
@@ -122,34 +122,6 @@ class Datasets_sc():
         else:
             img = img / 255.
             img = self.standardize(img)
-        return img
-    # TODO: Do we want to use a custom preprocess function?
-    #       Otherwise, we can just remove this.
-    def custom_preprocess_fn(self, img):
-        """ Custom preprocess function for ImageDataGenerator. """
-
-        if self.task == '3':
-            img = tf.keras.applications.vgg16.preprocess_input(img)
-        else:
-            img = img / 255.
-            img = self.standardize(img)
-
-        # EXTRA CREDIT:
-        # Write your own custom data augmentation procedure, creating
-        # an effect that cannot be achieved using the arguments of
-        # ImageDataGenerator. This can potentially boost your accuracy
-        # in the validation set. Note that this augmentation should
-        # only be applied to some input images, so make use of the
-        # 'random' module to make sure this happens. Also, make sure
-        # that ImageDataGenerator uses *this* function for preprocessing
-        # on augmented data.
-
-        if random.random() < 0.3:
-            img = img + tf.random.uniform(
-                (hp.img_size, hp.img_size, 1),
-                minval=-0.1,
-                maxval=0.1)
-
         return img
 
     def get_data(self, path, is_vgg, shuffle, augment):
