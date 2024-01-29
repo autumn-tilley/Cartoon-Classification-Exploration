@@ -18,7 +18,7 @@ To classify into cartoon-or-not using custom "your" model:
 To classify into cartoon-or-not using custom VGG model:
 -     python run.py --task 6 --data ../cartoon-or-not --imagePath ../cartoon-or-not/test/cartoon/image_0001.jpg
 
-* If wanting to retrain, you might want to adjust "hyperparameters_sc" based on the task. I have already trained and saved every model's weights *
+If wanting to retrain, you might want to adjust "hyperparameters_sc" based on the task. I have already trained and saved every model's weights
 
 But order to run/train the cartoon-or-not classification model enter the following into the terminal:
 
