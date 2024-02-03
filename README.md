@@ -1,3 +1,5 @@
+* Aspects of and template code taken from CSCI 1430, a course at Brown University *
+
 INSTRUCTIONS ON HOW TO RUN
 ___________________________________
 
