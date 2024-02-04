@@ -1,4 +1,5 @@
 * Aspects of and template code taken from CSCI 1430, a course at Brown University *
+* Images taken from http://www.di.ens.fr/willow/pdfs/cvpr06b.pdf *
 
 INSTRUCTIONS ON HOW TO RUN
 ___________________________________
